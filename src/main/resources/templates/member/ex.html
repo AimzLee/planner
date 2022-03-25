@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!--layout 파일을 설정-->
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
+    <!--layout 에 출력할 내용-->
+    <th:block th:fragment="content">
+
+        <h1>Member Page</h1>
+        These data is transferred by 'model' container.<br>
+        Data type : 'list'<br>
+        The data as below is created at 'Controller POJO Class'.<br>
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">email</th>
+                <th scope="col">name</th>
+                <th scope="col">password</th>
+                <th scope="col">fromSocial</th>
+                <th scope="col">roleSet</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--내용 출력-->
+            <tr th:each="vo : ${list}">
+                <td>[[${vo.email}]]</td>
+                <td>[[${vo.name}]]</td>
+                <td>[[${vo.password}]]</td>
+                <td>[[${vo.fromSocial}]]</td>
+                <td>[[${vo.roleSet}]]</td>
+            </tr>
+            </tbody>
+        </table>
+
+    </th:block>
+</th:block>

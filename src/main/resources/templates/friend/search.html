@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
+
+    <th:block th:fragment="content">
+
+        <head>
+            <meta charset="utf-8" />
+            <title>친구 찾기</title>
+            <!--css , js-->
+            <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+            <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+            <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+            <!--
+            <link href="/assets/css/jquery.autocomplete.css" rel="stylesheet">
+            <script src="/assets/js/jquery.autocomplete.js"></script>
+
+            <script type="text/javascript" src="/assets/js/jquery.js"></script>
+            <script type='text/javascript' src='/assets/js/jquery.bgiframe.min.js'></script>
+            <script type='text/javascript' src='/assets/js/jquery.ajaxQueue.js'></script>-->
+
+        </head>
+        <body>
+        <form th:action="@{/friend/request}" th:method="post">
+            <label for="searchInput">아이디 검색: </label>
+            <input id="searchInput" name="id">
+            <button type="submit" class="btn btn-primary">친구요청</button>
+        </form>
+        </body>
+
+        <script>
+            $(function() {	//화면 다 뜨면 시작
+
+                $("#searchInput").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            type: 'get',
+                            url: "/allid",
+                            dataType: "json",
+                            data: {},
+                            success: function (data) {
+                                response(
+                                    $.map(data, function (item) {
+                                        return {
+                                            //label : item,
+                                            value: item,
+                                            test: item
+                                        }
+                                    })
+                                );
+                            }
+                        });
+                    },	// source 는 자동 완성 대상
+
+                    focus: function (event, ui) {
+                    },
+                    matchContains: true,
+                    selectFirst: false,
+                    minLength: 1,// 최소 글자수
+                    classes: {
+                        'ui-autocomplete': 'highlight'
+                    },
+                    delay: 100,	//autocomplete 딜레이 시간(ms)
+                    //disabled: true, //자동완성 기능 끄기
+
+                    // }).autocomplete('instance')._renderItem = function(ul, item) { // UI 변경 부
+                    //     return $('<li>') //기본 tag가 li
+                    //         .append('<div>' + item.value + '<br>' + item.label + '</div>') // 원하는 모양의 HTML 만들면 됨
+                    //         .appendTo(ul);
+                    // };
+                })
+            });
+
+        </script>
+
+
+    </th:block>
+</th:block>

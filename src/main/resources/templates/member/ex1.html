@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!--layout 파일을 설정-->
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
+    <!--layout 에 출력할 내용-->
+    <th:block th:fragment="content">
+
+        <h1>Container Type</h1>
+        <ul>
+            <li>Texts located as below show us how we can reach here from somewhere.
+        </ul>
+
+        <h3>'vo1': transferred by 'model'</h3>
+        <ul>
+            <li>[[${vo1.email}]]
+            <li>[[${vo1.password}]]
+            <li>[[${vo1.name}]]
+        </ul>
+        <h3>'vo2': transferred by 'session'</h3>
+        <ul>
+            <li id="area2">
+        </ul>
+        <h3>'vo3': transferred by 'redirectAttributes'</h3>
+        <ul>
+            <li id="area3">
+        </ul>
+
+        <script th:inline="javascript">
+            let vo2 = [[${vo2}]];
+            if(vo2==null){
+                document.getElementById("area2").innerHTML = "vo2 is null";
+            }else {
+                str = ""
+                str += vo2.email
+                str += "<li>" + vo2.password
+                str += "<li>" + vo2.name
+                document.getElementById("area2").innerHTML = str;
+            }
+
+            let vo3 = [[${vo3}]];
+            if(vo3==null){
+                document.getElementById("area3").innerHTML = "vo3 is null";
+            }else {
+                str = ""
+                str += vo3.email
+                str += "<li>" + vo3.password
+                str += "<li>" + vo3.name
+                document.getElementById("area3").innerHTML = str;
+            }
+        </script>
+
+    </th:block>
+</th:block>

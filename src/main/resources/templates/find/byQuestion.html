@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ByQuestion</title>
+</head>
+<body style="text-align: center">
+<h2> 질문/답으로 아이디 찾기 </h2>
+<form th:action="@{/find/result/byQuestion}" method="post">
+    <div>
+        <label for="answer">Question</label>
+        <select name="context" id="context">
+            <option value="What is your favorite food">What is your favorite food</option>
+            <option value="What is your body secret">What is your body secret</option></br>
+        </select>
+    </div>
+    <div>
+        <label for="answer">답 입력</label>
+        <input type="text" id="answer" name="answer"></br>
+    </div>
+    <div>
+        <label for="birthday">생년월일</label>
+        <input type="date" id="birthday" name="birthday" /></br>
+    </div>
+
+        <input type="submit" class="buttons" value="찾기"/>
+</form>
+    <input type="button" onclick="location.href='/main';" value="메인으로">
+</body>
+</html>

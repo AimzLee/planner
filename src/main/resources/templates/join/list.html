@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!--layout 파일을 설정-->
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
+    <!--layout 에 출력할 내용-->
+    <th:block th:fragment="content">
+
+        <h1 class="mt-4">Join Page
+            <!--삽입 링크 ' <div>이면 밑으로! <span>이면 옆으로!-->
+            <!--
+            <span>
+                <a th:href="@{/join/register}">
+                    <button type="button" class="btn btn-outline-primary">REGISTER</button>
+                </a>
+            </span>
+            -->
+        </h1>
+
+        <form method="get" id="searchForm">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <!-- 'name="type"' 이어야 하는 이유는 무엇일까? -->
+                    <select class="custom-select" name="type">
+                        <option align='center'>선택</option>
+                        <option value="1">option01</option>
+                        <option value="2">option02</option>
+                    </select>
+                </div>
+                <input class="form-control" name="first" placeholder="Enter first text here.">
+                <input class="form-control" name="second" placeholder="Enter second text here.">
+                <div class="input-group-append" id="button-addon4">
+                    <button class="btn btn-outline-secondary btn-btn01" type="button">btn01</button>
+                    <button class="btn btn-outline-secondary btn-btn02" type="button">btn02</button>
+                    <button class="btn btn-outline-secondary btn-btn03" type="button">btn03</button>
+                    <!--
+                    <button class="btn btn-outline-secondary btn-btn04" type="button">btn04</button>
+                    -->
+                </div>
+            </div>
+        </form>
+
+        <h3 class="mt-4">About Lecture</h3>
+        <h5>Data transferred by 'model' container named "map"</h5>
+        <!--데이터 목록 출력 -->
+        <table class="table table-striped">
+            <!--출력하는 열의 제목-->
+            <thead>
+            <tr>
+                <th scope="col">Language</th>
+                <th scope="col">Integrated Development Environment</th>
+                <th scope="col">Build Tool</th>
+                <th scope="col">Web Application Server</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- 'model' 로 전달된 map 의 내용 출력-->
+            <tr>
+                <!-- 글번호 -->
+                <th scope="row"> [[${map.Language}]] </th>
+                <td>[[${map.IDE}]]</td>
+                <td>[[${map.BuildTool}]]</td>
+                <td>[[${map.WAS}]]</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <br>
+        <h3 class="mt-4">List of task</h3>
+        <h5>These data is transferred by the 'model' container named "list"</h5>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">Contents of the transferred 'LIST'</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- 'model' 로 전달된 list 의 내용 출력-->
+            <tr th:each="task : ${list}">
+                <th scope="row"> [[${task}]] </th>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Thymeleaf 에서 자바스크립트를 거는 방법 -->
+        <script th:inline="javascript">
+            $('.btn-btn01').click(function(e){
+                alert("1번 버튼을 누르셨습니다.")
+            });
+            $('.btn-btn02').click(function(e){
+                alert("2번 버튼을 누르셨습니다.")
+            });
+            $('.btn-btn03').click(function(e){
+                alert("3번 버튼을 누르셨습니다.")
+            });
+            $('.btn-btn04').click(function(e){
+                alert("4번 버튼을 누르셨습니다.")
+            });
+        </script>
+
+    </th:block>
+</th:block>

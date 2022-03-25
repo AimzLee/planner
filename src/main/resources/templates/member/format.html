@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!--layout 파일을 설정-->
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
+    <!--layout 에 출력할 내용-->
+    <th:block th:fragment="content">
+
+        <h1>Page named 'format'</h1>
+        In this page, we have studied the way to use 'th:fragment' & 'th:replace'.<br>
+        <br>
+        <br>
+        <h3>Check this out!</h3>
+        <p>It is possible to use "fragment if fragment" like as below.</p>
+
+        <p>'part1' & 'part2' as below are fragmented one.</p>
+        <div th:replace="~{layout/frag :: part1}"></div>
+        <div th:replace="~{layout/frag :: part2}"></div>
+
+        <p>Texts as below are transferred by 'model' container!</p>
+        <ul>
+            <li>type : <span id="area1"></span>
+            <li>email : <span id="area2"></span>
+            <li>name : <span id="area3"></span>
+            <li>password : <span id="area4"></span>
+            <li>fromSocial : <span id="area5"></span>
+            <li>roleSet : <span id="area6"></span>
+        </ul>
+
+        <!-- if you miss to enter the name of part, all the parts get into the space -->
+        <div th:replace="~{layout/frag}"></div>
+
+        <script th:inline="javascript">
+            let vo = [[${vo}]];
+            document.getElementById("area1").innerHTML = vo;
+            document.getElementById("area2").innerHTML = vo.email;
+            document.getElementById("area3").innerHTML = vo.name;
+            document.getElementById("area4").innerHTML = vo.password;
+            document.getElementById("area5").innerHTML = vo.fromSocial;
+            document.getElementById("area6").innerHTML = vo.roleSet;
+        </script>
+
+    </th:block>
+</th:block>

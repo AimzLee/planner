@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
+    <th:block th:fragment="content">
+
+        <!-- 아래의 데이터가 모두 readonly -->
+        <h1 class="mt-4">Board Read Page</h1>
+        <div class="form-group">
+            <label >Bno</label>
+            <input type="text" class="form-control" name="gno" th:value="${dto.bno}" readonly >
+        </div>
+        <div class="form-group">
+            <label >Title</label>
+            <input type="text" class="form-control" name="title" th:value="${dto.title}" readonly >
+        </div>
+        <div class="form-group">
+            <label >Content</label>
+            <textarea class="form-control" rows="5" name="content" readonly>[[${dto.content}]]</textarea>
+        </div>
+        <div class="form-group">
+            <label >Writer</label>
+            <input type="text" class="form-control" name="writer" th:value="${dto.writerName}" readonly>
+        </div>
+        <div class="form-group">
+            <label >RegDate</label>
+            <input type="text" class="form-control" name="regDate" th:value="${#temporals.format(dto.regDate, 'yyyy/MM/dd HH:mm:ss')}" readonly>
+        </div>
+        <div class="form-group">
+            <label >ModDate</label>
+            <input type="text" class="form-control" name="modDate" th:value="${#temporals.format(dto.modDate, 'yyyy/MM/dd HH:mm:ss')}" readonly>
+        </div>
+
+        <!-- '수정 또는 삭제' 와 '목록' 버튼 -->
+        <a th:href="@{/board/modify(bno = ${dto.bno}, page=${requestDTO.page}, type=${requestDTO.type}, keyword =${requestDTO.keyword})}">
+            <button type="button" class="btn btn-primary">수정 또는 삭제</button>
+        </a>
+
+        <!--  -->
+        <a th:href="@{/board/list(page=${requestDTO.page}, type=${requestDTO.type}, keyword =${requestDTO.keyword})}">
+            <button type="button" class="btn btn-info">목록</button>
+        </a>
+
+        <!-- 댓글 삽입 요청(현재 댓글 수 출력) -->
+        <div >
+            <div class="mt-4">
+                <!-- 'addReply'라고 이름지은 부분이 중요! -->
+                <h5> <span class="badge badge-info addReply">댓글 작성</span> </h5>
+                <h5> <span class="badge badge-secondary replyCount">댓글 수 [[${dto.replyCount}]]</span> </h5>
+            </div>
+            <!-- 댓글 내용을 입력할 영역을 확보(이 영역은 java 나 Spring 이랑 아무 상관 없다!)
+             즉, JSON 데이터만 잘 받아오면! backend 영역에 대한 지식 없어서 작업이 가능하다! -->
+            <div class="list-group replyList"></div>
+        </div>
+
+        <!-- 댓글 삽입/수정/삭제에 이용할 모달창 영역 생성 -->
+        <div class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <!-- header -->
+                    <div class="modal-header">
+                        <h5 class="modal-title">동적으로 바뀌도록!</h5>
+                        <button type="button" class="close" data-dismiss="modal" arialabel="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <!-- body -->
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input class="form-control" type="text" name="replyText" placeholder="댓글 작성...">
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" type="text" name="replyer" placeholder="작성자...">
+                            <!-- rno 를 hidden 으로 숨겨둠! -->
+                            <input type="hidden" name="rno">
+                        </div>
+                    </div>
+
+                    <!-- footer:버튼영역 -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger replyRemove">삭제</button>
+                        <button type="button" class="btn btn-warning replyModify">수정</button>
+                        <button type="button" class="btn btn-primary replySave">추가</button>
+                        <button type="button" class="btn btn-outline-secondary replyClose" data-dismiss="modal">닫기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--<script> 라고 쓰지 않고, 아래와 같이 'th:inline="javascript"'을 덧붙이면,
+        Java의 데이터를 Javascript 변수에 바로 대입이 가능 -->
+        <script th:inline="javascript">//'$'가 포함된 코드는 jQuery
+
+            var bno = [[${dto.bno}]];//Java의 데이터를 Javascript 변수에 바로 대입
+
+            //문서를 전부 읽고 나면
+            $(document).ready(function () {
+
+                //댓글이 추가될 영역
+                var listGroup = $(".replyList");
+
+                //댓글 개수 부분을 클릭하면
+                $(".replyCount").click(function () {
+                    //code 가 잘 동작하는지 확인한 수 주석처리!
+                    //alert('클릭')
+                    loadJSONData();
+                });
+                //댓글이 추가될 영역
+                var listGroup = $(".replyList");
+
+                //날짜 데이터를 문자열로 변환해서 리턴해는 함수를 만들자!
+                //javascript 의 'Math'&'Date' 는 java 의 것!(똑같아!)
+                function formatTime(str) {
+                    var date = new Date(str);
+                    return date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes();
+                }
+
+                //특정한 게시글의 댓글을 처리하는 함수
+                function loadJSONData() {
+                    //get 방식으로 ajax 요청
+                    $.getJSON('/replies/board/' + bno, function (arr) {
+                        /*
+                        //데이터 잘 오는직 확인하자! 확인 후 주석처리!!
+                        console.log(arr);
+                        alert(arr)
+                         */
+                        //댓글 수 영역을 다시 출력 - 댓글을 추가하거나 삭제했을 때 다시 출력하기 위해서!
+                        //목록을 출력하기 위한 변수
+                        var str = "";
+                        $('.replyCount').html("댓글 수 " + arr.length);
+                        $.each(arr, function (idx, reply) {
+                            /* 디버깅을 위한 코드
+                            console.log(reply);
+                            alert(reply);
+                             */
+                            //script 나 html 로 출력할때는 '',"" 를 많이 쓰기 때문에 확인해가면서 작업할것!!
+                            str += '<div class="card-body" data-rno="' + reply.rno + '"><b>' + reply.rno + '</b>';//'data-rno'의 의미와 기능을 잘 생각해 보자! 중요!!
+                            //댓글 내용 출력
+                            str += '<h5 class="card-title">' + reply.text + '</h5>';
+                            //댓글 작성자 출력
+                            str += '<h6 class="card-subtitle mb-2 text-muted">' + reply.replyer + '</h6>';
+                            //댓글 작성 시각 출력
+                            str += '<p class="card-text">' + formatTime(reply.regDate) + '</p>';
+                            str += '</div>';
+                        })
+                        listGroup.html(str);
+                    });
+                }
+
+
+            //댓글 추가 영역을 눌렀을 때 처리할 스트립스 코드
+            var modal = $('.modal');
+            //'addReply'라 이름지은 영역을 클릭하면!
+            $(".addReply").click(function () {
+                modal.modal('show');
+                //댓글 입력하는 부분 초기화 시키기
+                $('input[name="replyText"]').val('');
+                $('input[name="replyer”]').val('');
+                $(".modal-footer .btn").hide(); //'modal' 내의 모든 버튼을 안 보이도록
+                $(".replySave, .replyClose").show(); //필요한 버튼들만 보이도록
+            });
+
+            $(".replySave").click(function() {
+                var reply = {
+                    bno: bno,
+                    text: $('input[name="replyText"]').val(),
+                    replyer: $('input[name="replyer"]').val()
+                }
+                //console.log(reply);
+
+                //ajax 활용
+                $.ajax({
+                    url: '/replies/',
+                    method: 'post',
+                    data: JSON.stringify(reply),
+                    contentType: 'application/json; charset=utf-8', dataType: 'json',
+                    success: function(data){
+                        //넘어온 댓글 번호 저장(아래의 코드를 이용하여 콘솔로 디버깅!) 확인 후 주석처리!
+                        //console.log(data);
+                        var newRno = parseInt(data);
+                        alert(newRno +"번 댓글이 등록되었습니다.");
+                        //대화상자 닫기
+                        modal.modal('hide');
+                        //댓글 다시 출력
+                        loadJSONData();
+                    }
+                })
+            });
+
+            //댓글을 클릭했을 때 처리(기존의 replyList 영역 안의 card-body 를 클릭하면! 이란 뜻
+            //원래 있던 영역이 아니므로! 그 영역에 추가된 '또다른 이름이 지어진 영역'을 클릭하면! -> 위임의 형태로 처리!
+            $('.replyList').on("click", ".card-body", function(){
+                //각 글의 댓글 번호 가져오기
+                var rno = $(this).data("rno");
+                /* .card-body의 data-rno 부분이 중요한 이유!!
+                //디버깅용 코드
+                alert(rno);
+                 */
+                //기존 데이터를 대화 상자에 출력 (지울때는 rno 로 지우고, 수정할때는 세 정보 모두 필요!)
+                $("input[name='replyText']").val( $(this).find('.card-title').html());
+                $("input[name='replyer']").val( $(this).find('.card-subtitle').html());
+                $("input[name='rno']").val(rno);
+                $(".modal-footer .btn").hide();//버튼 모두 숨기고!
+                $(".replyRemove, .replyModify, .replyclose").show();//필요한 것만 보이도록!
+                modal.modal('show');
+            });
+
+        //삭제 버튼을 눌렀을 때 처리(삭제할 댓글의 번호가 있어야 함!)
+        $(".replyRemove").on("click", function(){
+            var rno = $("input[name='rno']").val(); //모달창에 보이는 댓글 번호로 hidden 처리되어 있음
+            $.ajax({
+                url: '/replies/' + rno,//하나뿐이니 '/'뒤에 바로 주자!
+                method: 'delete',//예전에는 'post'로 보냈지만, 요즘은 'delete'로 보낸다! 기억!
+                //dataType: 'json',//삭제/수정할 때 'json'으로 주자!(이 경우 굳이 필요 없다!)
+                success: function(result){
+                    //console.log("result: " + result);
+                    if(result == 'success'){
+                        alert("댓글이 삭제되었습니다.");//보통 얼럿창으로 하지 않지만, 이렇게도 한다는 것을 보여주려고!
+                        //대화상자 닫기
+                        modal.modal('hide');
+                        //댓글 다시 출력
+                        loadJSONData();
+                    }
+                }
+            })
+        });
+
+        //수정은 항상 '삽입'과 유사함!
+        $(".replyModify").click(function() {
+            //수정할때는 '댓글'테이블의 기본키(=rno)가 필요함!
+            var rno = $("input[name='rno']").val();
+            var reply = {
+                rno: rno,
+                bno: bno,
+                text: $('input[name="replyText"]').val(),
+                replyer: $('input[name="replyer"]').val()
+            }
+            /*
+            //code for debugging
+            console.log(reply);
+             */
+            $.ajax({
+                url: '/replies/' + rno,
+                method: 'put',//수정일 경우 method Type = 'put' 기억!
+                data: JSON.stringify(reply),
+                contentType: 'application/json; charset=utf-8',
+                //dataType:'json',
+                success: function(result){
+                    //console.log("RESULT: " + result);
+                    if(result == 'success'){
+                        alert("댓글이 수정되었습니다");
+                        modal.modal('hide');
+                        //댓글 다시 출력
+                        loadJSONData();
+                    }
+                }
+            });
+        });});
+
+        </script>
+
+    </th:block>
+</th:block>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Log In</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/sign-in/">
+
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet">
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+        a { text-decoration:none }
+    </style>
+
+    <link th:href="@{/assets/css/signin.css}" rel="stylesheet">
+</head>
+<body class="text-center">
+
+<main class="form-signin">
+    <form action="login" method="post">
+
+        <h1 class="h3 mb-3 fw-normal">들어가기</h1>
+
+        <div class="form-floating">
+            <input type="text" class="form-control" name="email" id="email" placeholder="Id or Email Address">
+            <label for="email">Id / Email</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" name="pw" id="pw" placeholder="Password">
+            <label for="pw">Password</label>
+        </div>
+        <br>
+        <input type="checkbox" value="remember-me"> 아이디/비밀번호 기억하기 <br>
+        <input type="checkbox" value=""> 로그인 유지
+        <br>
+        </div>
+        <br>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">로그인</button>
+
+    </form>
+    <br>
+    <label><a href='/find/byNickName'>아이디 찾기 </a> / <a href="/find/pwByInfo"> 비밀번호 찾기 </a> / <a href='/checkplan/join'> 회원가입</a></label>
+</main>
+
+</body>
+
+
+

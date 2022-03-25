@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!-- layout 파일을 설정 -->
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
+    <!-- layout 에 출력할 내용 -->
+    <th:block th:fragment="content">
+
+        <!--h1 class="mt-4">Calendar</h1-->
+
+        <link href="/localhost_files/main.css" rel="stylesheet">
+        <script src="/localhost_files/main.js"></script>
+
+        <style>
+            planner {
+                margin: 40px 10px;
+                padding: 0;
+                font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+                font-size: 14px;
+            }
+
+            #calendar {
+                margin: 0 auto;
+            }
+        </style>
+
+        <div id="calendar" class="fc fc-media-screen fc-direction-ltr fc-theme-standard"></div>
+
+
+        <script>
+
+            document.addEventListener('DOMContentLoaded', function() {
+                var calendarEl = document.getElementById('calendar');
+
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    initialDate: '2022-02-18',
+                    navLinks: true, // can click day/week names to navigate views
+                    selectable: true,
+                    selectMirror: true,
+                    select: function(arg) {
+                        var title = prompt('일정입력하기');
+                        if (title) {
+                            calendar.addEvent({
+                                title: title,
+                                start: arg.start,
+                                end: arg.end,
+                                allDay: arg.allDay
+                            })
+                        }
+                        calendar.unselect()
+                    },
+                    eventClick: function(arg) {
+                        alert('상세보기')
+                        /*if (confirm('Are you sure you want to delete this event?')) {
+                            arg.event.remove()
+                        }*/
+                    },
+                    editable: true,
+                    dayMaxEvents: true, // allow "more" link when too many events
+                    events: [
+                        {
+                            title: '일대다 수업',
+                            start: '2022-01-18T09:30:00'
+                        },
+                        {
+                            title: '팀 프로젝트 공부',
+                            start: '2022-02-07',
+                            end: '2022-02-10'
+                        },
+                        {
+                            groupId: 999,
+                            title: '발표',
+                            start: '2022-02-07T17:00:00'
+                        },
+                        {
+                            groupId: 999,
+                            title: '발표',
+                            start: '2022-02-14T17:00:00'
+                        },
+                        {
+                            title: 'API 공부',
+                            start: '2022-02-18',
+                            end: '2022-02-20'
+                        },
+                        {
+                            title: '회의',
+                            start: '2022-02-06T10:30:00',
+                            end: '2022-02-06T12:30:00'
+                        },
+                        {
+                            title: '점심',
+                            start: '2022-02-16T13:00:00'
+                        },
+                        {
+                            title: '미팅',
+                            start: '2022-02-16T14:30:00'
+                        },
+                        {
+                            title: 'Happy Hour',
+                            start: '2022-02-29T17:30:00'
+                        },
+                        {
+                            title: '저녁',
+                            start: '2022-02-29T20:00:00'
+                        },
+                        {
+                            title: 'Birthday Party',
+                            start: '2022-02-23T07:00:00'
+                        },
+                        {
+                            title: 'Click for Google',
+                            url: 'http://google.com/',
+                            start: '2022-01-28'
+                        }
+                    ]
+                });
+
+                calendar.render();
+            });
+
+        </script>
+
+    </th:block>
+</th:block>

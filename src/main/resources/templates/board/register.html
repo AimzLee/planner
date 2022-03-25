@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
+    <th:block th:fragment="content">
+
+        <!-- 입력 폼을 생성 -->
+        <h1 class="mt-4">Board Register Page</h1>
+        <!-- action 안적으면 자기 자신으로! 대신 method 는 꼭 적어줘야 함! -->
+        <!--
+        <form th:action="@{/board/list}" th:method="post">
+        -->
+        <form th:method="post">
+
+            <!-- 제목 입력 -->
+            <div class="form-group">
+                <label >Title</label>
+                <input type="text" class="form-control" name="title" placeholder="Enter Title">
+            </div>
+
+            <!-- 내용 입력 -->
+            <div class="form-group">
+                <label >Content</label>
+                <textarea class="form-control" rows="5" name="content"></textarea>
+            </div>
+
+            <!-- 이메일 입력??? -->
+            <div class="form-group">
+                <label >Writer Email</label>
+                <input type="email" class="form-control" name="writerEmail"
+                       placeholder="Writer Email ">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+    </th:block>
+
+</th:block>

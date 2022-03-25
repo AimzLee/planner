@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!--layout 파일을 설정-->
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
+    <!--layout 에 출력할 내용-->
+    <th:block th:fragment="content">
+
+    <h1>Member Page</h1>
+        [[${data}]]
+        <br>
+        <br>
+        <a href="/member/ex" class="btn btn-primary exBtn">ex</a>
+        <a href="/member/ex1" class="btn btn-danger ex1Btn">ex1</a>
+        <a href="/member/inlineToEx1" class="btn btn-info inlineToEx1Btn">inlineToEx1</a>
+        <a href="/member/inline" class="btn btn-primary inlineBtn">inline</a>
+        <a href="/member/link" class="btn btn-danger linkBtn">link</a>
+        <a href="/member/format" class="btn btn-info formatBtn">format</a>
+        <a href="/member/list" class="btn btn-info formatBtn">list</a>
+
+    </th:block>
+</th:block>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Find Your Pw</title>
+</head>
+<body style="text-align: center">
+<h2>비밀 번호 찾기</h2>
+<form th:action="@{/find/result/byEmailOrId}" method="post">
+    <div>
+        <label for="userInfo">계정 정보 입력</label>
+        <input type="text" id="userInfo" name="userInfo"  placeholder="Please insert Your Email" /></br>
+    </div>
+    <div>
+        <label for="answer">질문 선택</label>
+        <select name="context" id="context">
+            <option value="What is your favorite food">What is your favorite food</option>
+            <option value="What is your body secret">What is your body secret</option></br>
+        </select>
+    </div>
+    <div>
+        <label for="answer">답변</label>
+        <input type="text" id="answer" name="answer"></br>
+    </div>
+
+    <div>
+        <label for="birthday">생년월일</label>
+        <input type="date" id="birthday" name="birthday" /></br>
+    </div>
+
+    <input type="submit" class="buttons" value="비밀번호 찾기"/>
+</form>
+<input type="button" onclick="location.href='/checkplan/join';" value="회원가입">
+<input type="button" onclick="location.href='/main';" value="메인으로">
+
+</body>
+</html>

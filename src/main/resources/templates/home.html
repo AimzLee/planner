@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!--layout 파일을 설정-->
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
+    <!--layout 에 출력할 내용-->
+    <th:block th:fragment="content">
+
+        <h1>웹 기반 일정 관리 어플리케이션</h1>
+
+        <br>
+<!--
+        <h2> ==> 220217 이다정 수정사항</h2>
+        <ol>
+            <li>일단 board와 guestbook은 숨겨둠</li>
+            <li>메인 화면 발표용으로 간단하게 요약</li>
+            <li>한글로 된 메뉴는 일단 완료했다는 뜻</li>
+        </ol>
+        <ul>
+          <li>validation 의존성 추가</li>
+        </ul>
+<hr>-->
+        <div th:if="${session.nick} != null">
+            <h3><b>[<span th:text="${session.nick}"></span>]</b>님 안녕하세요!<br></h3>
+            <br>
+            <br>
+        </div>
+
+        <div th:if="${session.nick} == null">
+            <a href="/checkplan/login">로그인이 필요합니다 (이동)</a>
+            <br>
+            <h3>'our PLANNER' 를 이용해서 간편하게 일정관리하세요!</h3>
+            <h6>[페이지 설명]</h6>
+            <ul>
+
+                <li>'Calendar' 를 선택하시면 'bootstrap' 으로 구현한 '달력'창에 일정 정보를 입력하실 수 있습니다.
+                <li>'일정 목록' 는 '일정관리' 페이지 구현을 위한 연습용 or 목록형 메뉴!
+                <!--
+                <li>'Join' 와 'Member' 는 사실 'CSS' 와 'Data 를 주고받는 연습' 을 위한 페이지입니다.
+                <li>'Board' 는 게시판
+                <li>'Guest Book' 은 로그인 정보 없이 사용이 가능한 방명록입니다.
+                -->
+            </ul>
+        </div>
+        <div th:if="${session.nick} != null">
+        <h3>일정 현황 (data sample)</h3>
+        <style>
+            .box {
+                width: 240px;
+                height: 180px;
+                border-radius: 15px;
+                overflow: hidden;
+                box-shadow: 3px 3px 3px #c8c8c8;
+            }
+            .profile {
+                object-fit: cover;
+            }
+        </style>
+        <table>
+            <tr>
+                <td>
+                    <div class="box" style="background: #BDBDBD;">
+                        <img class="profile" src="/img/graph_sample01.png">
+                    </div>
+                </td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <div class="box" style="background: #BDBDBD;">
+                        <img class="profile" src="/img/graph_sample02.png">
+                    </div>
+                </td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <div class="box" style="background: #BDBDBD;">
+                        <img class="profile" src="/img/graph_sample03.png">
+                    </div>
+                </td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <div class="box" style="background: #BDBDBD;">
+                        <img class="profile" src="/img/graph_sample04.png">
+                    </div>
+                </td>
+            </tr>
+            </div>
+<!--
+            <tr>
+                <td>
+                    <ul>
+                        <li>이러이러해서 저러저러하다
+                        <li>있어보이는 그래프
+                        <li>없어보이진 않나요?
+                    </ul>
+                </td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <ul>
+                        <li>꼭 그런것은 아니다.
+                        <li>과연그러할까?
+                        <li>과연 어떨지...
+                    </ul>
+                </td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <ul>
+                        <li>샘플일 뿐!
+                        <li>데이터가 중요할 듯!
+                        <li>지금은 공부! 그리고 연습!
+                    </ul>
+                </td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <ul>
+                        <li>앞으로 열흘!
+                        <li>깔끔한 마무리!
+                        <li>홧팅!
+                    </ul>
+                </td>
+            </tr>
+            -->
+        </table>
+
+    </th:block>
+</th:block>

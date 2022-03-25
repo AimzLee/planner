@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
+    <th:block th:fragment="content">
+
+        <h1 class="mt-4">Information about Plans</h1>
+
+        <div class="form-group">
+            <label>제목</label>
+            <input type="text" class="form-control" name="title" th:value="${dto.title}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label>설명</label>
+            <input type="text" class="form-control" name="description" th:value="${dto.description}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label>장소</label>
+            <input type="text" class="form-control" name="location" th:value="${dto.location}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label>작성자</label>
+            <input type="text" class="form-control" name="importance" th:value="${dto.writerNick}" readonly>
+        </div>
+
+
+        <style>
+            .uploadResult {
+                width: 100%;
+                background-color: #818182;
+                margin-top: 10px;
+                border-radius: 7px;
+            }
+
+            .uploadResult ul {
+                display: flex;
+                flex-flow: row;
+                justify-content: center;
+                align-items: center;
+                vertical-align: top;
+
+            }
+
+            .uploadResult ul li {
+                list-style: none;
+                padding: 10px;
+                margin-left: 2em;
+            }
+
+            .uploadResult ul li img {
+                width: 100px;
+            }
+        </style>
+
+
+        <button type="button" class="btn btn-primary">
+            체크리스트 확인 <span class="badge badge-light">[[${dto.checkListCount}]]</span>
+        </button>
+
+        <button type="button" class="btn btn-info addReviewBtn">체크리스트 추가</button>
+
+        <!-- area for printing contents of REVIEWS -->
+        <div class="list-group reviewList"></div>
+
+        <!-- 리뷰를 위한 모달 창 -->
+        <div class="reviewModal modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">할일 입력</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!--
+                        <div class="form-group">
+                            <label>Writer</label>
+                            <input type="text" class="form-control" name="email">
+                        </div>
+                        -->
+                        <div class="form-group">
+                            <label>중요도<span class="grade"></span></label>
+                            <div class='starrr'></div>
+                        </div>
+                        <div class="form-group">
+                            <label>할일</label>
+                            <input type="text" class="form-control" name="todo" placeholder="Good Plan!">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary reviewSaveBtn">Save</button>
+                        <button type="button" class="btn btn-warning modifyBtn">Modify</button>
+                        <button type="button" class="btn btn-danger removeBtn">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script th:src="@{/starrr.js}"></script>
+        <link th:href="@{/css/starrr.css}" rel="stylesheet">
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
+
+        <script>
+            $(document).ready(function (e) {
+                var grade = 0;
+                var pno = [[${dto.pno}]];
+
+                $('.starrr').starrr({
+                    rating: grade,
+                    change: function (e, value) {
+                        console.log("-------------------");
+                        if (value) {
+                            console.log(value);
+                            grade = value;
+                        }
+                    }
+                });
+
+                let reviewModal = $(".reviewModal");
+                let inputDone = $('input[name="done"]');
+                let inputTodo = $('input[name="todo"]');
+
+                $(".addReviewBtn").click(function () {
+                    inputDone.val("");
+                    inputTodo.val("");
+                    $(".removeBtn, .modifyBtn").hide();
+                    $(".reviewSaveBtn").show();
+                    reviewModal.modal('show');
+                });
+
+                $('.reviewSaveBtn').click(function () {
+                    var data = {pno: pno, text: inputTodo.val(), done: inputDone.val()};
+                    console.log(data);
+                    $.ajax({
+                        url: '/checklist/' + pno,
+                        type: "POST",
+                        data: JSON.stringify(data),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "text",
+                        success: function (result) {
+                            console.log("result: " + result);
+                            self.location.reload();
+                        }
+                    })
+                    reviewModal.modal('hide');
+                });
+
+                //페이지가 열리면 바로 리뷰 데이터들을 가져와서 사용한다.
+                function getMovieReviews() {
+                    function formatTime(str) {
+                        var date = new Date(str);
+                        return date.getFullYear() + '/'
+                            + (date.getMonth() + 1) + '/'
+                            + date.getDate() + ' '
+                            + date.getHours() + ':'
+                            + date.getMinutes();
+                    }
+
+                    $.getJSON("/checklist/" + pno + "/list", function (arr) {
+                        var str = "";
+
+                        arr.sort(function (o1, o2) {
+                            if (formatTime(o1.cno) < formatTime(o2.cno)) return 1;
+                            if (formatTime(o1.cno) > formatTime(o2.cno)) return -1;
+                            if (formatTime(o1.cno) == formatTime(o2.cno)) return 0;
+                        });
+
+                        $.each(arr, function (idx, checkList) {
+                            console.log(checkList);
+                            str += ' <div class="card-body" data-cno=' + checkList.cno + '>';
+                            str += ' <h5>할일: <span class="card-title">' + checkList.todo + '</span></h5>';
+                            //str += ' <h6>완료: <span class="card-subtitle">' + checkList.done + '</h6>';
+                            //str += ' <h6>작성자: <span class="card-subtitle mb-2 text-muted">' + review.name + '</h6>';
+                            //str += ' <h6>작성시각: <span class="card-subtitle mb-2 text-muted">' + formatTime(review.regDate) + '</h6>';
+                            //str += ' <h6>수정시각: <span class="card-subtitle mb-2 text-muted">' + formatTime(review.modDate) + '</h6>';
+                            str += ' </div>';
+                        });
+
+                        $(".checkList").html(str);
+                    });
+                }
+
+                getMovieReviews();
+                getCheckList();
+
+                //리뷰 선택
+                var cno;
+                $(".chekList").on("click", ".card-body", function () {
+                    $(".reviewSaveBtn").hide();
+                    $(".removeBtn, .modifyBtn").show();
+                    var targetCheckList = $(this);
+                    cno = targetCheckList.data("cno");
+                    console.log("cno: " + cno);
+                    inputTodo.val(targetCheckList.data("todo"));
+                    //inputTodo.val(targetCheckList.find('.card-title').text());
+                    //var grade = targetReview.find('.card-subtitle').html();
+
+                    $(".starrr a:nth-child(" + grade + ")").trigger('click');
+
+                    $('.reviewModal').modal('show');
+                });
+
+
+                $(".modifyBtn").on("click", function () {
+                    var data = {
+                        cno: cno,
+                        pno: pno,
+                        //grade: grade,
+                        todo: inputTodo.val(),
+                        //mid: inputEmail.val()
+                    };
+                    console.log(data);
+                    $.ajax({
+                        url: '/checklist/' + pno + "/" + cno,
+                        type: "PUT",
+                        data: JSON.stringify(data),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "text",
+                        success: function (result) {
+                            console.log("result:" + result);
+                            self.location.reload();
+                        }
+                    });
+                    reviewModal.modal('hide');
+                });
+
+                $(".removeBtn").on("click", function () {
+                    var data = {cno: cno};
+                    console.log(data);
+                    $.ajax({
+                        url: '/checklist/' + pno + "/" + cno,
+                        type: "DELETE",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "text",
+                        success: function (result) {
+                            console.log("result:" + result);
+                            self.location.reload();
+                        }
+                    });
+                    reviewModal.modal('hide');
+                });
+
+            });
+
+
+            $(".uploadResult li").click(function () {
+                var file = $(this).data('file');
+                console.log(file);
+                $('.imageModal .modal-body').html("<img style='width:100%' src='/display?filename=" + file + "&size=1' >");
+                $(".imageModal").modal("show");
+            });
+
+        </script>
+
+    </th:block>
+
+</th:block>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!--layout 파일을 설정-->
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content} )}">
+    <!--layout 에 출력할 내용-->
+    <th:block th:fragment="content">
+
+        <h1 class="mt-4">Member Page</h1>
+        The data as below is transferred from the DB.<br>
+
+        <form method="get" id="searchForm">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <!-- 'name="type"' 이어야 하는 이유는 무엇일까? -->
+                    <select class="custom-select" name="type">
+                        <option align='center'>선택</option>
+                        <option value="1">option01</option>
+                        <option value="2">option02</option>
+                    </select>
+                </div>
+                <input class="form-control" name="first" placeholder="Enter first text here.">
+                <input class="form-control" name="second" placeholder="Enter second text here.">
+                <div class="input-group-append" id="button-addon4">
+                    <button class="btn btn-outline-secondary btn-btn01" type="button">btn01</button>
+                    <button class="btn btn-outline-secondary btn-btn02" type="button">btn02</button>
+                    <button class="btn btn-outline-secondary btn-btn03" type="button">btn03</button>
+                </div>
+            </div>
+        </form>
+
+        <br>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">email</th>
+                <th scope="col">name</th>
+                <th scope="col">password</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--내용 출력-->
+            <tr th:each="vo : ${list}">
+                <td>[[${vo.email}]]</td>
+                <td>[[${vo.name}]]</td>
+                <td>[[${vo.password}]]</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Thymeleaf 에서 자바스크립트를 거는 방법 -->
+        <script th:inline="javascript">
+            $('.btn-btn01').click(function(e){
+                alert("1번 버튼을 누르셨습니다.")
+            });
+            $('.btn-btn02').click(function(e){
+                alert("2번 버튼을 누르셨습니다.")
+            });
+            $('.btn-btn03').click(function(e){
+                alert("3번 버튼을 누르셨습니다.")
+            });
+        </script>
+
+    </th:block>
+</th:block>
